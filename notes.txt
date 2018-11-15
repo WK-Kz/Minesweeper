@@ -1,0 +1,53 @@
+Checklist
+
+1) Be able to output in asssembly <- GOOD
+2) Fix Hello World
+3) Get VGA to work <- GOOD
+4) Build board <- In Progress
+    What about cells? What do I do with those? 1x1 use code 15
+    Fix shift of boarder
+5) Character and movement
+    To do this what do I have to do? Get box cursor
+6) Placement of mines and mine masking
+    Mines are originally masked, when user presses space, it checks the
+    adjacent cells around to determine if player dies
+7) Restart button, at the moment only end game works
+8) Press space to activate if mines are there
+9) Prevent user from moving outside of boarders
+    Check current position of cursor, if a ascii character exists there.
+    if user_moves
+        check()
+
+Registers and Shit
+-----------------------------------------------------
+A: accumulator use for most operations
+B: base hold address of procedure/variable
+C: count used for looping
+d: data used for multiplication and division
+
+CS – Code Segment, base location of program code
+DS – Data Segment, base location for variables
+SS – Stack Segment.  Base location of the stack
+ES – Extra Segment.  Additional base location for variables in memory
+
+BP – Base Pointer, offset from SS register to locate variables on the stack
+SP – Stack Pointer, offset from SS register as to the location of the stack’s top
+SI – Source Index, used for copying strings, segment register varies
+DI – Destination Index, used for destination for copying strings
+
+Resources:
+
+Interrupt DOS codes
+https://www.csc.depauw.edu/~bhoward/asmtut/asmtut12.html#topic11
+
+Information on Memory Addressing and Registers
+www.math.uaa.alaska.edu/~afkjm/cs221/handouts/irvine2.pdf
+
+INT 16 Keyboard BIOS
+http://stanislavs.org/helppc/int_16.html
+
+Arrays and Addressing Modes
+http://www.shsu.edu/csc_tjm/fall2005/cs272/arrays.html
+
+Cursor Position:
+https://stackoverflow.com/questions/46387989/move-cursor-using-arrow-keys-in-assembly
