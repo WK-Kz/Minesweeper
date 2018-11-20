@@ -64,20 +64,14 @@ START:
 		mov BYTE PTR es:[di], 186
         add di, 160
         cmp di, 1820
-        jnb continuing1; debugging purposes
-        ;jnb wait_for_f8
-        ;jnb build_horizontal_cell
+        jnb continuing2; debugging purposes
         loop l4
 
     ;mov BYTE PTR es:[484], 186
     ;mov BYTE PTR es:[487], 071h
 
-    ; Test Code
-    ;mov BYTE PTR es:[166], 196
-    ;mov BYTE PTR es:[324], 179
-    ;mov BYTE PTR es:[328], 179
-    ;mov BYTE PTR es:[486], 196
     continuing1:
+        mov BYTE PTR es:[4], 194 ;6 is top border
         mov BYTE PTR es:[6], 194 ;6 is top border
         mov BYTE PTR es:[10], 194
         mov BYTE PTR es:[14], 194
@@ -86,7 +80,7 @@ START:
         ;mov BYTE PTR es:[166], 124
         ;mov BYTE PTR es:[], 95
         mov BYTE PTR es:[166], 179
-        mov BYTE PTR es:[164], 42 ;bomb
+        mov byte ptr es:[162], 42 ;bomb
         ;mov BYTE PTR es:[166], 205
         ;mov BYTE PTR es:[164], 205
 
@@ -100,50 +94,49 @@ START:
     ;push ax, 58
 
     continuing2:
-        sub cx, cx
-        mov cx, 58
+        mov byte ptr es:[162], 42 ;bomb
+        ;mov BYTE PTR es:[166], 205
+        xor cx, cx
+        mov cx, 68
 
         sub di, di
-        mov di, 6
+        mov di, 4 
 
         mov ax, 194
 
-        jmp wait_for_f8
+        jmp top_columns
 
 
     top_columns:
         mov BYTE PTR es:[di], 194
-        add di, 2
+        add di, 4
         cmp di, cx
-        jnb column_di 
+        jnb begin_column_di
         loop top_columns 
 
-    column_di:
-        add di, 264
-        add cx, 218
+    begin_column_di:
+        sub di, di
+        add di, 322
+        sub cx, cx
+        add cx, 388
+        ;mov BYTE PTR es:[di], 196
+        ;add di, 2
+        ;mov BYTE PTR es:[58], 186 ; Top Right
 
     build_row:
-        mov BYTE PTR es:[di], 194
+        mov BYTE PTR es:[di], 196
         add di, 2
+        mov BYTE PTR es:[di], 197
+        add di, 2
+        cmp di, cx
+        jnb end_column_di
+        loop build_row
+
+    end_column_di:
+        mov BYTE PTR es:[di], 196
         
 
 
-
-    ; Build inner cells
-
-
-
-    ;mov BYTE PTR es:[
-    ;horizontal_cell_di:
-        ;sub di, di
-        ;mov di, 166
-
-    ;build_horizontal_cell:
-		;mov BYTE PTR es:[di], 186
-        ;add di, 160
-        ;cmp di, 1820
-        ;jnb wait_for_f8
-        ;loop build_horizontal_cell
 
     ; Get keystroke
     wait_for_f8:
