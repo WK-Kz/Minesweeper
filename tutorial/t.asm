@@ -1,7 +1,7 @@
 ; Kendall Molas
 ; CSc 211
 .MODEL SMALL
-.STACK 10h 
+.STACK 100h 
 .CODE
 
 assume cs:cseg, ds:cseg
@@ -21,8 +21,8 @@ START:
     ; 30 x 58?60 board
     mov BYTE PTR es:[0], 201 ; Top Left
     mov BYTE PTR es:[60], 187 ; Top Right
-    mov BYTE PTR es:[1760], 200; Bottom Left
-    mov BYTE PTR es:[1820], 188; Bottom Right
+    mov BYTE PTR es:[1600], 200; Bottom Left
+    mov BYTE PTR es:[1660], 188; Bottom Right
 
     mov di,2 
 
@@ -46,13 +46,13 @@ START:
         loop l2
 
     fix_di_l2:
-        mov di, 1762
+        mov di, 1602
 
     ; Bottom Border
     l3:
 		mov BYTE PTR es:[di], 205
         add di, 2
-        cmp di, 1820
+        cmp di, 1620
         jnb fix_di_l3
         loop l3
 
@@ -63,13 +63,14 @@ START:
     l4:
 		mov BYTE PTR es:[di], 186
         add di, 160
-        cmp di, 1820
+        cmp di, 1620
         jnb continuing2; debugging purposes
         loop l4
 
     ;mov BYTE PTR es:[484], 186
     ;mov BYTE PTR es:[487], 071h
 
+    ; Debugging
     continuing1:
         mov BYTE PTR es:[4], 194 ;6 is top border
         mov BYTE PTR es:[6], 194 ;6 is top border
@@ -92,51 +93,75 @@ START:
         jmp wait_for_f8
 
     ;push ax, 58
-
+    
+    ; Main Region of Code
     continuing2:
         mov byte ptr es:[162], 42 ;bomb
-        ;mov BYTE PTR es:[166], 205
-        xor cx, cx
-        mov cx, 68
+        ;mov BYTE PTR es:[166], 205 ;placement
 
-        sub di, di
+        xor di, di
         mov di, 4 
 
-        mov ax, 194
+        mov ax, 60 ; This does tho, USE AX
 
-        jmp top_columns
-
-
+    ; Create the | at the top border
     top_columns:
         mov BYTE PTR es:[di], 194
-        add di, 4
-        cmp di, cx
+        add di, 4 
+        cmp di, ax
         jnb begin_column_di
+        ;jnb wait_for_f8
         loop top_columns 
 
+    ; Fix DI so it will start at next row
     begin_column_di:
-        sub di, di
-        add di, 322
-        sub cx, cx
-        add cx, 388
+        add di, 262
+        mov BYTE PTR es:[di], 194
+        add ax, 320
+        jmp build_row
+
+    repeat_cycle_row:
+        add di, 422
+        ;mov BYTE PTR es:[di], 143
+        add cx, 488
+        jmp build_row
+
+    ;build_row:
         ;mov BYTE PTR es:[di], 196
         ;add di, 2
-        ;mov BYTE PTR es:[58], 186 ; Top Right
+        ;mov BYTE PTR es:[di], 197
+        ;add di, 2
+        ;cmp di, ax
+        ;jnb end_column_di
+        ;loop build_row
 
+    build_line0:
+
+        
     build_row:
         mov BYTE PTR es:[di], 196
         add di, 2
+        cmp di, ax
         mov BYTE PTR es:[di], 197
         add di, 2
-        cmp di, cx
-        jnb end_column_di
+        jnb wait_for_f8
         loop build_row
 
     end_column_di:
         mov BYTE PTR es:[di], 196
-        
+        ;cmp cx, 1830
+        ;jnb wait_for_f8
+        ;jmp repeat_cycle_row
+        jmp test_cycle0
 
+    test_cycle0:
+        add di, 106
+        add cx, cx
+        mov BYTE PTR es:[di], 14
+        jmp wait_for_f8
 
+    test_cycle1:
+        add di, 2
 
     ; Get keystroke
     wait_for_f8:
