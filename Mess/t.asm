@@ -115,55 +115,38 @@ START:
 
     ; Fix DI so it will start at next row
     begin_column_di:
-        add di, 262
+        ;add di, 262 ; start next column row
+        mov di, 320
+        add di, 2
         mov BYTE PTR es:[di], 194
-        add ax, 320
+        ;add ax, 318 ; move counter
+        mov ax, 378
         jmp build_row
 
     repeat_cycle_row:
-        add di, 422
-        ;mov BYTE PTR es:[di], 143
-        add cx, 488
+        add di, 320
+        add di, 2
+        mov BYTE PTR es:[di], 143
+        add ax, 320
         jmp build_row
 
-    ;build_row:
-        ;mov BYTE PTR es:[di], 196
-        ;add di, 2
-        ;mov BYTE PTR es:[di], 197
-        ;add di, 2
-        ;cmp di, ax
-        ;jnb end_column_di
-        ;loop build_row
-
-    build_line0:
-
-        
     build_row:
         mov BYTE PTR es:[di], 196
         add di, 2
-        cmp di, ax
         mov BYTE PTR es:[di], 197
         add di, 2
-        jnb wait_for_f8
+        cmp di, ax
+        jnb end_column_di
         loop build_row
 
     end_column_di:
         mov BYTE PTR es:[di], 196
-        ;cmp cx, 1830
-        ;jnb wait_for_f8
-        ;jmp repeat_cycle_row
-        jmp test_cycle0
-
-    test_cycle0:
-        add di, 106
-        add cx, cx
-        mov BYTE PTR es:[di], 14
-        jmp wait_for_f8
-
-    test_cycle1:
-        add di, 2
+        jnb wait_for_f8
+        ;cmp ax, 1658
+        ;jna begin_column_di
 
     ; Get keystroke
+    ; Add cursor pos here
     wait_for_f8:
         mov ah, 00
         int 16h
@@ -171,6 +154,7 @@ START:
         jne wait_for_f8
 
     ; DONE
+    ; Exit game
     done:
         mov ah, 0
         mov al, 03 

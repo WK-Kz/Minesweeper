@@ -3,12 +3,10 @@
 .MODEL SMALL
 .STACK 100h 
 .CODE
-
 assume cs:cseg, ds:cseg
 cseg segment
 
 START:
-
     ; Push Video into ES
     mov ax, 0b800h
     mov es, ax
@@ -34,7 +32,7 @@ START:
 		je fix_di_l1
         loop l1
 
-    fix_di_l1:
+    fix_di_l1: ; Fix di 
         mov di, 160
 
     ; Left Border
@@ -45,11 +43,11 @@ START:
         jnb fix_di_l2
         loop l2
 
-    fix_di_l2:
+    fix_di_l2: ; Fix di 
         mov di, 1602
 
     ; Bottom Border
-    l3:
+    l3: ; Fix di 
 		mov BYTE PTR es:[di], 205
         add di, 2
         cmp di, 1660
@@ -60,7 +58,7 @@ START:
         mov di, 220
 
     ; Right Border
-    l4:
+    l4 :; Fix di 
 		mov BYTE PTR es:[di], 186
         add di, 160
         cmp di, 1620
@@ -82,40 +80,41 @@ START:
         mov BYTE PTR es:[di], 194
         add di, 4 
         cmp di, ax
-        jnb set_columns
+        jnb set_rows
         loop top_columns 
 
-    set_columns:
+    ; Place 1604 in di in order to build the bottom row
+    set_rows:
         xor di, di
         mov di, 1604
         xor ax,ax
         mov ax, 1660
 
-    bot_columns:
+    bot_rows:
         mov BYTE PTR es:[di], 193
         add di, 4
         cmp di, ax
-        jnb fix_di_col
-        loop bot_columns
+        jnb fix_di_rows
+        loop bot_rows
 
 
-    fix_di_col:
+    fix_di_rows:
         xor di, di
         mov di, 320
         xor ax, ax
         mov ax, 378
 
     ; Fix DI so it will start at next row
-    begin_column_di:
+    begin_row_di:
         add di, 2
         jmp build_row
 
     repeat_cycle_row:
+        mov BYTE PTR es:[di], 196 ; Place last - in board
         add di, 264
         add ax, 320
         cmp ax, 1658
-        ;jnb wait_for_f8
-        jnb ending
+        jnb fix_di_cols
         jmp build_row
 
     build_row:
@@ -124,29 +123,44 @@ START:
         mov BYTE PTR es:[di], 197
         add di, 2
         cmp di, ax
-        jnb end_column_di
+        jnb repeat_cycle_row
         loop build_row
 
-    ; Bottom row before bottom edge board
-    end_column_di:
-        mov BYTE PTR es:[di], 196
-        cmp ax, 1658
-        jna repeat_cycle_row
+    ; Clear registers and move values into di and ax
+    fix_di_cols:
+        xor di, di
+        mov di, 162
+        xor ax, ax
+        mov ax, 218
 
-    ending:
-        mov BYTE PTR es:[164], 179
-        jmp wait_for_f8
+    ; Offset by 2
+    begin_col_di:
+        add di, 2
+        jmp build_columns
 
+    ; Loop through this until di reaches ax
+    repeat_cycle_column:
+        add di, 264
+        add ax, 320
+        cmp di, 1498
+        jnb wait_for_next_keypress
+        jmp build_columns
+
+    ; Main column building
     build_columns:
-
+        mov BYTE PTR es:[di], 179
+        add di, 4
+        cmp di, ax
+        jnb repeat_cycle_column
+        loop build_columns
 
     ; Get keystroke
     ; Add cursor pos here
-    wait_for_f8:
+    wait_for_next_keypress:
         mov ah, 00
         int 16h
         cmp ah, 42h
-        jne wait_for_f8
+        jne wait_for_next_keypress
 
     ; DONE
     ; Exit game
