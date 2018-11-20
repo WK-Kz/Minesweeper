@@ -3,15 +3,30 @@ Checklist
 1) Be able to output in asssembly <- GOOD
 2) Fix Hello World
 3) Get VGA to work <- GOOD
-4) Build board <- In Progress
+4) Build board <- Board Built
     What about cells? What do I do with those? 1x1 use code 15
     Fix shift of boarder
+
+    This ugly
+
+    Every 320 is the start of line
+    Every 160 is placement of normal cell
+
+    So with the  - start with offset of 4
+    cx doesn't work for a counter? So use of AX
+
 5) Character and movement
     To do this what do I have to do? Get box cursor
+    Moving with up, down, left, right moves cursor 4 bytes
+
 6) Placement of mines and mine masking
     Mines are originally masked, when user presses space, it checks the
     adjacent cells around to determine if player dies
+
 7) Restart button, at the moment only end game works
+    Go to main, and let f8 be the button to loop back
+    let f9 be the button to quit
+
 8) Press space to activate if mines are there
 9) Prevent user from moving outside of boarders
     Check current position of cursor, if a ascii character exists there.
