@@ -15,8 +15,10 @@ START:
     mov ah, 0
     mov al, 03 
     int 10h
+
+    ; ------------ Board begin -----------------
     
-    ; 30 x 58?60 board
+    ; Set board edges
     mov BYTE PTR es:[0], 201 ; Top Left
     mov BYTE PTR es:[60], 187 ; Top Right
     mov BYTE PTR es:[1600], 200; Bottom Left
@@ -62,11 +64,15 @@ START:
 		mov BYTE PTR es:[di], 186
         add di, 160
         cmp di, 1620
-        jnb continuing2; debugging purposes
+        jnb board_build; debugging purposes
         loop l4
 
+    ; ------------ Board end -----------------
+
+    ; ------------ Build board rows and cols begin ------------
+
     ; Main Region of Code
-    continuing2:
+    board_build:
         mov byte ptr es:[162], 42 ;bomb
         ;mov BYTE PTR es:[166], 205 ;placement
 
@@ -96,7 +102,6 @@ START:
         cmp di, ax
         jnb fix_di_rows
         loop bot_rows
-
 
     fix_di_rows:
         xor di, di
@@ -143,7 +148,7 @@ START:
         add di, 264
         add ax, 320
         cmp di, 1498
-        jnb wait_for_next_keypress
+        jnb enable_cursor_movement
         jmp build_columns
 
     ; Main column building
@@ -154,17 +159,65 @@ START:
         jnb repeat_cycle_column
         loop build_columns
 
+    enable_cursor_movement:
+        mov ah, 02h
+        mov dh, 1
+        mov dl, 1
+        int 10h
+        jmp KEYPRESS 
+
     ; Get keystroke
-    ; Add cursor pos here
-    wait_for_next_keypress:
+    KEYPRESS:
         mov ah, 00
         int 16h
-        cmp ah, 42h
-        jne wait_for_next_keypress
+
+        ; check for keypress
+        cmp al, 's'
+        je DOWN_KEY
+
+        cmp al, 'w'
+        je UP_KEY
+
+        cmp al, 'd'
+        je RIGHT_KEY
+
+        cmp al, 'a'
+        je LEFT_KEY
+
+        cmp ah, 42h ; Exit key
+        je DONE
+
+        cmp 
+
+        jne KEYPRESS
+    
+    DOWN_KEY:
+        mov ah, 02h
+        add dh, 2
+        int 10h
+        jmp KEYPRESS
+
+    UP_KEY:
+        mov ah, 02h
+        sub dh, 2
+        int 10h
+        jmp KEYPRESS
+
+    RIGHT_KEY:
+        mov ah, 02h
+        add dl, 2
+        int 10h
+        jmp KEYPRESS
+
+    LEFT_KEY:
+        mov ah, 02h
+        sub dl, 2
+        int 10h
+        jmp KEYPRESS
 
     ; DONE
     ; Exit game
-    done:
+    DONE:
         mov ah, 0
         mov al, 03 
         int 10h
