@@ -91,18 +91,22 @@ START:
 
     
     ; ------------ Board begin -----------------
-    
     ; Set board edges
     mov BYTE PTR es:[0], 201 ; Top Left
+    mov BYTE PTR es:[1], 04h
     mov BYTE PTR es:[60], 187 ; Top Right
+    mov BYTE PTR es:[61], 04h
     mov BYTE PTR es:[1600], 200; Bottom Left
+    mov BYTE PTR es:[1601], 04h
     mov BYTE PTR es:[1660], 188; Bottom Right
+    mov BYTE PTR es:[1661], 04h
 
     mov di,2 
 
     ; Top Border
     L1:
         mov BYTE PTR es:[di], 205 
+        mov BYTE PTR es:[di+1], 04h
         add di, 2 
         cmp di, 60
 		je FIX_DI_L1
@@ -114,6 +118,7 @@ START:
     ; Left Border
 	L2:
 		mov BYTE PTR es:[di], 186
+        mov BYTE PTR es:[di+1], 04h
         add di, 160
         cmp di, 1600
         jnb FIX_DI_L2
@@ -125,6 +130,7 @@ START:
     ; Bottom Border
     L3: ; Fix di 
 		mov BYTE PTR es:[di], 205
+        mov BYTE PTR es:[di+1], 04h
         add di, 2
         cmp di, 1660
         jnb FIX_DI_L3
@@ -136,58 +142,32 @@ START:
     ; Right Border
     L4 :; Fix di 
 		mov BYTE PTR es:[di], 186
+        mov BYTE PTR es:[di+1], 04h
         add di, 160
         cmp di, 1620
-        jnb COLOR_L1_DI; debugging purposes
+        jnb BOARD_BUILD; debugging purposes
         loop L4
-
-    COLOR_ALL:
-        mov BYTE PTR es:[di], 04h
-        add di, 2
-        
-        cmp di, 60
-        mov di, 161
-
-        cmp di, 1658
-        jnb BOARD_BUILD
-
-    COLOR_L1_DI:
-        xor di, di
-        mov di, 1
-
-    COLOR_L1:
-        mov BYTE PTR es:[di], 04h
-        add di, 2
-        cmp di, 60
-        jnb COLOR_L2_DI
-        loop COLOR_L1
-
-    COLOR_L2_DI:
-        mov di, 161
-
-    COLOR_L2:
-        mov BYTE PTR es:[di], 04h
-        add di, 160
-        cmp di, 1600
-        jnb BOARD_BUILD
-        loop COLOR_L2
-        
     ; ------------ Board end -----------------
-
     ; ------------ Build board rows and cols begin ------------
-
-    ; Main Region of Code
     BOARD_BUILD:
+        ; Place bombs
         mov BYTE PTR es:[166], 42 ;bomb
-
+        mov BYTE PTR es:[206], 42 ;bomb
+        mov BYTE PTR es:[494], 42 ;bomb
+        mov BYTE PTR es:[1174], 42 ;bomb
+        mov BYTE PTR es:[846], 42 ;bomb
+        mov BYTE PTR es:[1142], 42 ;bomb
+        mov BYTE PTR es:[1466], 42 ;bomb
+        mov BYTE PTR es:[1492], 42 ;bomb
+        
         xor di, di
         mov di, 4 
-
         mov ax, 60 ; This does tho, USE AX
 
     ; Create the | at the top border
     TOP_COLUMNS:
         mov BYTE PTR es:[di], 194
+        mov BYTE PTR es:[di+1], 04h
         add di, 4 
         cmp di, ax
         jnb SET_ROWS
@@ -203,6 +183,7 @@ START:
     ; The ascii added to this row is done every four bites.
     BOT_ROWS:
         mov BYTE PTR es:[di], 193
+        mov BYTE PTR es:[di+1], 04h
         add di, 4
         cmp di, ax
         jnb FIX_DI_ROWS
@@ -223,6 +204,7 @@ START:
     ; Used in loop
     REPEAT_CYCLE_ROW:
         mov BYTE PTR es:[di], 196 ; Place last - in board
+        mov BYTE PTR es:[di+1],  04h
         add di, 264
         add ax, 320
         cmp ax, 1658
@@ -231,8 +213,10 @@ START:
 
     BUILD_ROW:
         mov BYTE PTR es:[di], 196
+        mov BYTE PTR es:[di+1], 04h 
         add di, 2
         mov BYTE PTR es:[di], 197
+        mov BYTE PTR es:[di+1], 04h 
         add di, 2
         cmp di, ax
         jnb REPEAT_CYCLE_ROW
@@ -261,10 +245,13 @@ START:
     ; Main column building
     BUILD_COLUMNS:
         mov BYTE PTR es:[di], 179
+        mov BYTE PTR es:[di+1], 04h 
         add di, 4
         cmp di, ax
         jnb REPEAT_CYCLE_COLUMN
         loop BUILD_COLUMNS
+
+    ; ----------- END Board Building ---------------
 
     CLEAN:
         xor ax, ax
@@ -286,22 +273,22 @@ START:
         int 16h
 
         ; check for keypress
-        cmp al, 's'
+        cmp al, 's' ; Move Cursor Down
         je DOWN_KEY
 
-        cmp al, 'w'
+        cmp al, 'w' ; Move Cursor Up
         je UP_KEY
 
-        cmp al, 'd'
+        cmp al, 'd' ; Move Cursor Right
         je RIGHT_KEY
 
-        cmp al, 'a'
+        cmp al, 'a' ; Move Cursor Left
         je LEFT_KEY
 
-        cmp al, 'r'
+        cmp al, 'r' ; Restart
         je START
 
-        cmp ah, 39h
+        cmp ah, 39h ; Check current cell
         je BOMB_CHECK
 
         cmp ah, 42h ; Exit key
@@ -309,17 +296,48 @@ START:
 
         jne KEYPRESS
 
+    ; Check for bomb in cell
     BOMB_CHECK:
         push ax
-        mov ax, di
-        push es:[di]
-        pop ax
+        ;mov ax, di
+        ;push es:[di]
+        ;pop ax
+        xor ax, ax
+        mov al, es:[di] ; WHY DONT THIS WORK
         cmp al, 43
+        je OVER
         mov BYTE PTR es:[414], al
         pop ax
         jmp KEYPRESS
-        
-    
+
+    OVER:
+        mov BYTE PTR es:[1510], 'G'
+        mov BYTE PTR es:[1512], 'A'
+        mov BYTE PTR es:[1514], 'M'
+        mov BYTE PTR es:[1516], 'E'
+        mov BYTE PTR es:[1520], 'O'
+        mov BYTE PTR es:[1522], 'V'
+        mov BYTE PTR es:[1524], 'E'
+        mov BYTE PTR es:[1526], 'R'
+
+        mov BYTE PTR es:[1670], 'P'
+        mov BYTE PTR es:[1672], 'R'
+        mov BYTE PTR es:[1674], 'E'
+        mov BYTE PTR es:[1676], 'S'
+        mov BYTE PTR es:[1678], 'S'
+        mov BYTE PTR es:[1680], 'S'
+        mov BYTE PTR es:[1684], 'R'
+
+        mov ah, 01
+        mov cx, 2000h
+        int 10h
+
+        mov ah, 0
+        int 16h
+
+        cmp al, 'r'
+        je START
+
     DOWN_KEY:
         cmp dh, 9 ; Restrict to bounding of box
         jge KEYPRESS
