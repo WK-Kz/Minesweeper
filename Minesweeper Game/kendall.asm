@@ -35,7 +35,7 @@ START:
         mov BYTE PTR es:[di], 205 
         add di, 2 
         cmp di, 60
-        je fix_di_l1
+		je fix_di_l1
         loop l1
 
     fix_di_l1: ; Fix di 
@@ -125,7 +125,6 @@ START:
         mov BYTE PTR es:[di], 196 ; Place last - in board
         add di, 264
         add ax, 320
-        mov ah, 02h
         cmp ax, 1658
         jnb fix_di_cols
         jmp build_row
@@ -205,17 +204,10 @@ START:
         cmp al, 'r'
         je START
 
-        cmp al, 39
-        je SCORE
-
         cmp ah, 42h ; Exit key
         je DONE
 
         jne KEYPRESS
-
-    SCORE:
-        msg db 'Use WASD to move up, left, down, and right', 0
-        
     
     DOWN_KEY:
         cmp dh, 9 ; Restrict to bounding of box
