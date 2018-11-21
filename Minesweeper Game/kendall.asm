@@ -148,18 +148,19 @@ START:
         jnb BOARD_BUILD; debugging purposes
         loop L4
     ; ------------ Board end -----------------
+
     ; ------------ Build board rows and cols begin ------------
     BOARD_BUILD:
         ; Place bombs
-        mov BYTE PTR es:[166], 42 ;bomb
-        mov BYTE PTR es:[206], 42 ;bomb
-        mov BYTE PTR es:[494], 42 ;bomb
-        mov BYTE PTR es:[1174], 42 ;bomb
-        mov BYTE PTR es:[846], 42 ;bomb
-        mov BYTE PTR es:[1142], 42 ;bomb
-        mov BYTE PTR es:[1466], 42 ;bomb
-        mov BYTE PTR es:[1492], 42 ;bomb
-        
+        ;mov BYTE PTR es:[166], 42 ;bomb
+        ;mov BYTE PTR es:[206], 42 ;bomb
+        ;mov BYTE PTR es:[494], 42 ;bomb
+        ;mov BYTE PTR es:[1174], 42 ;bomb
+        ;mov BYTE PTR es:[846], 42 ;bomb
+        ;mov BYTE PTR es:[1142], 42 ;bomb
+        ;mov BYTE PTR es:[1466], 42 ;bomb
+        ;mov BYTE PTR es:[1492], 42 ;bomb
+        xor cx,cx
         xor di, di
         mov di, 4 
         mov ax, 60 ; This does tho, USE AX
@@ -298,16 +299,53 @@ START:
 
     ; Check for bomb in cell
     BOMB_CHECK:
-        push ax
-        ;mov ax, di
-        ;push es:[di]
+        push ax ; Save current value of ax
+        ;mov al, es:[di] ; Store value in es:[di] in al
+        mov ax, di
+        jmp BOMB_AREAS
+        ;cmp al, 42 ; Check if bomb exists in that di (Cell)
+        ;je OVER ; GAME OVER
+        
+        ;xor cx,cx ;Clear Count
         ;pop ax
-        xor ax, ax
-        mov al, es:[di] ; WHY DONT THIS WORK
-        cmp al, 43
-        je OVER
-        mov BYTE PTR es:[414], al
-        pop ax
+        ;jmp ADD_SCORE
+        ;jmp KEYPRESS
+
+    BOMB_AREAS:
+        cmp ax, 166
+        je REVEAL_BOMBS
+        cmp ax, 206
+        je REVEAL_BOMBS
+        cmp ax, 494
+        je REVEAL_BOMBS
+        cmp ax,  1174
+        je REVEAL_BOMBS
+        cmp ax,  846
+        je REVEAL_BOMBS
+        cmp ax,  1142
+        je REVEAL_BOMBS
+        cmp ax, 1466
+        je REVEAL_BOMBS
+        cmp ax, 1492
+        
+        pop ax ; Restore value of ax
+
+        jmp ADD_SCORE
+
+    REVEAL_BOMBS:
+        mov BYTE PTR es:[166], 42 ;bomb
+        mov BYTE PTR es:[206], 42 ;bomb
+        mov BYTE PTR es:[494], 42 ;bomb
+        mov BYTE PTR es:[1174], 42 ;bomb
+        mov BYTE PTR es:[846], 42 ;bomb
+        mov BYTE PTR es:[1142], 42 ;bomb
+        mov BYTE PTR es:[1466], 42 ;bomb
+        mov BYTE PTR es:[1492], 42 ;bomb
+        jmp OVER
+
+    ADD_SCORE:
+        mov BYTE PTR es:[di], '1'
+        inc cx
         jmp KEYPRESS
 
     OVER:
@@ -325,8 +363,19 @@ START:
         mov BYTE PTR es:[1674], 'E'
         mov BYTE PTR es:[1676], 'S'
         mov BYTE PTR es:[1678], 'S'
-        mov BYTE PTR es:[1680], 'S'
-        mov BYTE PTR es:[1684], 'R'
+        mov BYTE PTR es:[1682], 'R'
+        
+        mov BYTE PTR es:[1830], 'S'
+        mov BYTE PTR es:[1832], 'C'
+        mov BYTE PTR es:[1834], 'O'
+        mov BYTE PTR es:[1836], 'R'
+        mov BYTE PTR es:[1838], 'E'
+        mov BYTE PTR es:[1840], ':'
+
+        ;mov BYTE PTR es:[1844], ch
+        push cx
+        pop ax
+        mov BYTE PTR es:[1846], al
 
         mov ah, 01
         mov cx, 2000h
