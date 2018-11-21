@@ -89,8 +89,8 @@ START:
     mov BYTE PTR es:[1230], 'L'
     mov BYTE PTR es:[1232], 'L'
 
-    
     ; ------------ Board begin -----------------
+
     ; Set board edges
     mov BYTE PTR es:[0], 201 ; Top Left
     mov BYTE PTR es:[1], 04h
@@ -109,10 +109,10 @@ START:
         mov BYTE PTR es:[di+1], 04h
         add di, 2 
         cmp di, 60
-		je FIX_DI_L1
+		je FIX_DI_L2
         loop L1
 
-    FIX_DI_L1: ; Fix di 
+    FIX_DI_L2: ; Fix di 
         mov di, 160
 
     ; Left Border
@@ -121,10 +121,10 @@ START:
         mov BYTE PTR es:[di+1], 04h
         add di, 160
         cmp di, 1600
-        jnb FIX_DI_L2
+        jnb FIX_DI_L3
         loop L2
 
-    FIX_DI_L2: ; Fix di 
+    FIX_DI_L3: ; Fix di 
         mov di, 1602
 
     ; Bottom Border
@@ -133,10 +133,10 @@ START:
         mov BYTE PTR es:[di+1], 04h
         add di, 2
         cmp di, 1660
-        jnb FIX_DI_L3
+        jnb FIX_DI_L4
         loop L3
 
-    FIX_DI_L3:
+    FIX_DI_L4:
         mov di, 220
 
     ; Right Border
@@ -151,16 +151,6 @@ START:
 
     ; ------------ Build board rows and cols begin ------------
     BOARD_BUILD:
-        ; Place bombs
-        ;mov BYTE PTR es:[166], 42 ;bomb
-        ;mov BYTE PTR es:[206], 42 ;bomb
-        ;mov BYTE PTR es:[494], 42 ;bomb
-        ;mov BYTE PTR es:[1174], 42 ;bomb
-        ;mov BYTE PTR es:[846], 42 ;bomb
-        ;mov BYTE PTR es:[1142], 42 ;bomb
-        ;mov BYTE PTR es:[1466], 42 ;bomb
-        ;mov BYTE PTR es:[1492], 42 ;bomb
-        xor cx,cx
         xor di, di
         mov di, 4 
         mov ax, 60 ; This does tho, USE AX
@@ -257,7 +247,9 @@ START:
     CLEAN:
         xor ax, ax
         xor dx, dx
-        xor di,di
+        xor cx,cx
+        xor bx, bx
+        xor di, di
         mov di, 162
         jmp ENABLE_CURSOR_MOVEMENT
 
@@ -266,6 +258,8 @@ START:
         mov dh, 1
         mov dl, 1
         int 10h
+        mov ch, 48 ; Set 0 to bh
+        mov cl, 48 ; Set 0 to bl
         jmp KEYPRESS 
 
     ; Get keystroke
@@ -300,16 +294,7 @@ START:
     ; Check for bomb in cell
     BOMB_CHECK:
         push ax ; Save current value of ax
-        ;mov al, es:[di] ; Store value in es:[di] in al
         mov ax, di
-        jmp BOMB_AREAS
-        ;cmp al, 42 ; Check if bomb exists in that di (Cell)
-        ;je OVER ; GAME OVER
-        
-        ;xor cx,cx ;Clear Count
-        ;pop ax
-        ;jmp ADD_SCORE
-        ;jmp KEYPRESS
 
     BOMB_AREAS:
         cmp ax, 166
@@ -318,19 +303,43 @@ START:
         je REVEAL_BOMBS
         cmp ax, 494
         je REVEAL_BOMBS
-        cmp ax,  1174
+        cmp ax, 1174
         je REVEAL_BOMBS
-        cmp ax,  846
+        cmp ax, 846
         je REVEAL_BOMBS
-        cmp ax,  1142
+        cmp ax, 1142
         je REVEAL_BOMBS
         cmp ax, 1466
         je REVEAL_BOMBS
-        cmp ax, 1492
+        cmp ax, 1490
+        je REVEAL_BOMBS
         
         pop ax ; Restore value of ax
 
         jmp ADD_SCORE
+
+    ADD_SCORE:
+        mov BYTE PTR es:[di], '1'
+        inc cl
+        jmp KEYPRESS
+
+    GET_VALUE:
+        cmp cl, 59
+        jl SINGLE_DIGIT
+        jmp TWO_DIGIT
+
+    SINGLE_DIGIT:
+        inc cl
+        jmp OVER 
+
+    TWO_DIGIT:
+        sub cl, 10
+        inc ch
+        cmp ch, 59
+        je OVER
+        cmp cl, 59
+        jle OVER
+        loop TWO_DIGIT
 
     REVEAL_BOMBS:
         mov BYTE PTR es:[166], 42 ;bomb
@@ -340,13 +349,9 @@ START:
         mov BYTE PTR es:[846], 42 ;bomb
         mov BYTE PTR es:[1142], 42 ;bomb
         mov BYTE PTR es:[1466], 42 ;bomb
-        mov BYTE PTR es:[1492], 42 ;bomb
-        jmp OVER
-
-    ADD_SCORE:
-        mov BYTE PTR es:[di], '1'
-        inc cx
-        jmp KEYPRESS
+        mov BYTE PTR es:[1490], 42 ;bomb
+        dec cl ; Get proper score value
+        jmp GET_VALUE
 
     OVER:
         mov BYTE PTR es:[1510], 'G'
@@ -365,18 +370,18 @@ START:
         mov BYTE PTR es:[1678], 'S'
         mov BYTE PTR es:[1682], 'R'
         
-        mov BYTE PTR es:[1830], 'S'
-        mov BYTE PTR es:[1832], 'C'
-        mov BYTE PTR es:[1834], 'O'
-        mov BYTE PTR es:[1836], 'R'
-        mov BYTE PTR es:[1838], 'E'
-        mov BYTE PTR es:[1840], ':'
+        mov BYTE PTR es:[1990], 'S'
+        mov BYTE PTR es:[1992], 'C'
+        mov BYTE PTR es:[1994], 'O'
+        mov BYTE PTR es:[1996], 'R'
+        mov BYTE PTR es:[1998], 'E'
+        mov BYTE PTR es:[2000], ':'
 
-        ;mov BYTE PTR es:[1844], ch
-        push cx
-        pop ax
-        mov BYTE PTR es:[1846], al
+        ;inc ch
+        mov BYTE PTR es:[2004], ch
+        mov BYTE PTR es:[2006], cl
 
+        ; Disable cursor and ask user to restart game
         mov ah, 01
         mov cx, 2000h
         int 10h
@@ -432,7 +437,6 @@ START:
         mov al, 0
         mov ah, 4ch
         int 21h
-
     cseg ends
 
 END START
