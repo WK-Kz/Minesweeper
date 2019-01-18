@@ -1,5 +1,5 @@
-# Minesweeper 
-This is a project that was dedicated for CSc 21000 (Assembly Language) at CCNY. 
+# Minesweeper
+This is a project that was dedicated for CSc 21000 (Assembly Language) at CCNY.
 
 ## Prerequisites
 - DOSBOX
@@ -10,9 +10,9 @@ Open up DOSBOX and navigate to the directory which the kendall.asm file is locat
 
 ```
 
-tasm kendall
-tlink kendall /t
-kendall
+tasm minesweeper
+tlink minesweeper /t
+minesweeper
 
 ```
 

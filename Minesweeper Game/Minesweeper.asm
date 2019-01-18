@@ -1,10 +1,10 @@
 ; Kendall Molas
 ; CSc 211
-.MODEL SMALL
-.STACK 100h 
+MODEL SMALL
 .CODE
 assume cs:cseg, ds:cseg
 cseg segment
+org 100h
 
 JUMPS
 
@@ -19,75 +19,135 @@ START:
     int 10h
 
     ; Print Messages
-    mov BYTE PTR es:[420], 'H'
-    mov BYTE PTR es:[422], 'o'
-    mov BYTE PTR es:[424], 'w'
-    mov BYTE PTR es:[428], 't'
-    mov BYTE PTR es:[430], 'o'
-    mov BYTE PTR es:[434], 'p'
-    mov BYTE PTR es:[436], 'l'
-    mov BYTE PTR es:[438], 'a'
-    mov BYTE PTR es:[440], 'y'
-    mov BYTE PTR es:[442], ':'
+    MESSAGE_1:
+        mov BYTE PTR es:[420], 'H'
+        mov BYTE PTR es:[422], 'o'
+        mov BYTE PTR es:[424], 'w'
+        mov BYTE PTR es:[428], 't'
+        mov BYTE PTR es:[430], 'o'
+        mov BYTE PTR es:[434], 'p'
+        mov BYTE PTR es:[436], 'l'
+        mov BYTE PTR es:[438], 'a'
+        mov BYTE PTR es:[440], 'y'
+        mov BYTE PTR es:[442], ':'
 
-    mov BYTE PTR es:[560], 'W'
-    mov BYTE PTR es:[562], ':'
-    mov BYTE PTR es:[566], 'U'
-    mov BYTE PTR es:[568], 'P'
+    xor di, di
+    mov di, 421
+    COLOR_MSG1:
+        mov BYTE PTR es:[di], 6Eh
+        add di, 2
+        cmp di, 444
+        jnb MESSAGE_2
+        loop COLOR_MSG1
 
-    mov BYTE PTR es:[584], 'R'
-    mov BYTE PTR es:[586], ':'
-    mov BYTE PTR es:[590], 'R'
-    mov BYTE PTR es:[592], 'E'
-    mov BYTE PTR es:[594], 'S'
-    mov BYTE PTR es:[596], 'E'
-    mov BYTE PTR es:[598], 'T'
+    MESSAGE_2:
+        mov BYTE PTR es:[560], 'W'
+        mov BYTE PTR es:[562], ':'
+        mov BYTE PTR es:[566], 'U'
+        mov BYTE PTR es:[568], 'P'
 
-    mov BYTE PTR es:[720], 'S'
-    mov BYTE PTR es:[722], ':'
-    mov BYTE PTR es:[726], 'D'
-    mov BYTE PTR es:[728], 'O'
-    mov BYTE PTR es:[730], 'W'
-    mov BYTE PTR es:[732], 'N'
+        mov BYTE PTR es:[584], 'R'
+        mov BYTE PTR es:[586], ':'
+        mov BYTE PTR es:[590], 'R'
+        mov BYTE PTR es:[592], 'E'
+        mov BYTE PTR es:[594], 'S'
+        mov BYTE PTR es:[596], 'E'
+        mov BYTE PTR es:[598], 'T'
 
-    mov BYTE PTR es:[744], 'F'
-    mov BYTE PTR es:[746], '8'
-    mov BYTE PTR es:[748], ':'
-    mov BYTE PTR es:[752], 'Q'
-    mov BYTE PTR es:[754], 'U'
-    mov BYTE PTR es:[756], 'I'
-    mov BYTE PTR es:[758], 'T'
+    xor di, di
+    mov di, 561
+    COLOR_MSG2:
+        mov BYTE PTR es:[di], 6Eh
+        add di, 2
+        cmp di, 600
+        jnb MESSAGE_3
+        loop COLOR_MSG2
 
-    mov BYTE PTR es:[880], 'A'
-    mov BYTE PTR es:[882], ':'
-    mov BYTE PTR es:[886], 'L'
-    mov BYTE PTR es:[888], 'E'
-    mov BYTE PTR es:[890], 'F'
-    mov BYTE PTR es:[892], 'T'
+    MESSAGE_3:
+        mov BYTE PTR es:[720], 'S'
+        mov BYTE PTR es:[722], ':'
+        mov BYTE PTR es:[726], 'D'
+        mov BYTE PTR es:[728], 'O'
+        mov BYTE PTR es:[730], 'W'
+        mov BYTE PTR es:[732], 'N'
 
-    mov BYTE PTR es:[1040], 'D'
-    mov BYTE PTR es:[1042], ':'
-    mov BYTE PTR es:[1046], 'R'
-    mov BYTE PTR es:[1048], 'I'
-    mov BYTE PTR es:[1050], 'G'
-    mov BYTE PTR es:[1052], 'H'
-    mov BYTE PTR es:[1054], 'T'
+        mov BYTE PTR es:[744], 'F'
+        mov BYTE PTR es:[746], '8'
+        mov BYTE PTR es:[748], ':'
+        mov BYTE PTR es:[752], 'Q'
+        mov BYTE PTR es:[754], 'U'
+        mov BYTE PTR es:[756], 'I'
+        mov BYTE PTR es:[758], 'T'
 
-    mov BYTE PTR es:[1200], 'S'
-    mov BYTE PTR es:[1202], 'P'
-    mov BYTE PTR es:[1204], 'A'
-    mov BYTE PTR es:[1206], 'C'
-    mov BYTE PTR es:[1208], 'E'
-    mov BYTE PTR es:[1210], ':'
-    mov BYTE PTR es:[1214], 'C'
-    mov BYTE PTR es:[1216], 'H'
-    mov BYTE PTR es:[1218], 'E'
-    mov BYTE PTR es:[1220], 'C'
-    mov BYTE PTR es:[1222], 'K'
-    mov BYTE PTR es:[1226], 'C'
-    mov BYTE PTR es:[1228], 'E'
-    mov BYTE PTR es:[1230], 'L'
-    mov BYTE PTR es:[1232], 'L'
+    xor di, di
+    mov di, 721
+    COLOR_MSG3:
+        mov BYTE PTR es:[di], 6Eh
+        add di, 2
+        cmp di, 760
+        jnb MESSAGE_4
+        loop COLOR_MSG3
+
+    MESSAGE_4:
+        mov BYTE PTR es:[880], 'A'
+        mov BYTE PTR es:[882], ':'
+        mov BYTE PTR es:[886], 'L'
+        mov BYTE PTR es:[888], 'E'
+        mov BYTE PTR es:[890], 'F'
+        mov BYTE PTR es:[892], 'T'
+
+    xor di, di
+    mov di, 881
+    COLOR_MSG4:
+        mov BYTE PTR es:[di], 6Eh
+        add di, 2
+        cmp di, 894
+        jnb MESSAGE_5
+        loop COLOR_MSG4
+
+    MESSAGE_5:
+        mov BYTE PTR es:[1040], 'D'
+        mov BYTE PTR es:[1042], ':'
+        mov BYTE PTR es:[1046], 'R'
+        mov BYTE PTR es:[1048], 'I'
+        mov BYTE PTR es:[1050], 'G'
+        mov BYTE PTR es:[1052], 'H'
+        mov BYTE PTR es:[1054], 'T'
+
+    xor di, di
+    mov di, 1041
+    COLOR_MSG5:
+        mov BYTE PTR es:[di], 6Eh
+        add di, 2
+        cmp di, 1056
+        jnb MESSAGE_5
+        loop COLOR_MSG5
+
+    MESSAGE_6:
+        mov BYTE PTR es:[1200], 'S'
+        mov BYTE PTR es:[1202], 'P'
+        mov BYTE PTR es:[1204], 'A'
+        mov BYTE PTR es:[1206], 'C'
+        mov BYTE PTR es:[1208], 'E'
+        mov BYTE PTR es:[1210], ':'
+        mov BYTE PTR es:[1214], 'C'
+        mov BYTE PTR es:[1216], 'H'
+        mov BYTE PTR es:[1218], 'E'
+        mov BYTE PTR es:[1220], 'C'
+        mov BYTE PTR es:[1222], 'K'
+        mov BYTE PTR es:[1226], 'C'
+        mov BYTE PTR es:[1228], 'E'
+        mov BYTE PTR es:[1230], 'L'
+        mov BYTE PTR es:[1232], 'L'
+
+    xor di, di
+    mov di, 1201
+    COLOR_MSG6:
+        mov BYTE PTR es:[di], 6Eh
+        add di, 2
+        cmp di, 1234
+        jnb MESSAGE_6
+        loop COLOR_MSG6
 
     ; ------------ Board begin -----------------
 
